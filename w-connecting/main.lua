@@ -12,7 +12,7 @@ local function request(url)
     end, "GET", "",
     {
         ["Content-Type"] = "application/json",
-        ["Authorization"] = Config.Token
+        ["Authorization"] = "Bot "..Config.Token
     })
 
     -- Wait for the request to complete
@@ -50,7 +50,7 @@ end
 function GetUserData(discord)
     if not discord then return false end
 
-    local url = "users/"..discord
+    local url = "v9/users/"..discord
     local result = request(url)
     if result.code ~= 200 then return false end
 
@@ -62,19 +62,15 @@ end
 AddEventHandler('playerConnecting', function (playerName,setKickReason,deferrals)
     local source = source
     deferrals.defer()
-    Wait(750)
+    -- Wait(100 )
     local discord = GetDiscordId(source)
     local data = GetUserData(discord) 
     if not discord or not data then
         deferrals.done(Config.Lang["dont_have_discord"])
         return
     end
-    if not data.user then
-        deferrals.done(Config.Lang["not_in_guild"])
-        return
-    end
-    local logo =  ( "https://cdn.discordapp.com/avatars/%s/%s.png" ):format( discord, data.user.avatar)
-    local name =  data.user.global_name
+    local logo =  ( "https://cdn.discordapp.com/avatars/%s/%s.png" ):format( discord, data.avatar)
+    local name =  data.global_name
     UpdateCard(Config.Lang["custom"],function(card)
         deferrals.presentCard(card)
     end, logo, name)
