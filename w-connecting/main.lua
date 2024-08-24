@@ -232,20 +232,45 @@ Citizen.CreateThread(function()
                     end
                 end
             end
-            if #q > 0 then
-                table.sort(q, function (a,b)
-                    if a.p == b.p then
-                        return a.j < b.j
+            for i = #oq, 1, -1 do
+                if oq[i] then
+                    local source = oq[i].source
+                    if not GetPlayerName(source) then
+                        table.remove(oq, i)
+                    else
+                        local discord = oq[i] and oq[i].discord
+                        if discord then
+                            for _, v in ipairs(GetPlayers()) do
+                                local p = v
+                                local discord2 = GetDiscordId(p)
+                                if discord2 == discord then
+                                    table.remove(oq, i)
+                                    break
+                                end
+                            end
+                        end
                     end
-                    return a.p < b.p
-                end)
-                local Num = GetConvarInt("sv_maxclients", ogNum)
-                local ogNum2 = math.floor(ogNum*1.75)
-                if Num < ogNum2 then
-                    ExecuteCommand("sv_maxclients "..(Num+1))
                 end
-                if #GetPlayers() < Num then
-                    table.insert(oq, table.remove(q, 1))
+            end
+            table.sort(q, function(a, b)
+                if a.p == b.p then
+                    return a.j < b.j
+                else
+                    return a.p < b.p
+                end
+            end)
+            local onJoin = #oq
+            local MaxPlayers = GetConvarInt("sv_maxclients", 30)
+            if q[1] then
+                if MaxPlayers - (onJoin + #GetPlayers()) > 0 then
+                    local data = q[1]
+                    table.insert(oq, data)
+                    table.remove(q, 1)
+                elseif Config.IncreaseSlot then
+                    local p = q[1].p
+                    if p == 1 then
+                        ExecuteCommand("sv_maxclients "..(MaxPlayers+1))
+                    end
                 end
             end
         end)
