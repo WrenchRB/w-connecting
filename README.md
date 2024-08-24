@@ -33,7 +33,7 @@
 
 4. **Configure the script:**
    
-   - Open the `w-connecting.lua` file and configure the following:
+   - Open the `Config.lua` file and configure the following:
      - `GuildID`: Your Discord server's ID.
      - `Token`: Your Discord bot's token.
      - `Roles`: The Discord role IDs that are allowed to connect.
