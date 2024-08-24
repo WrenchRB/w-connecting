@@ -44,7 +44,7 @@
 
 ## Configuration
 
-Edit the `w-connecting.lua` file to match your server's settings. You can configure the role IDs, server name, and messages displayed to users during the connection process.
+Edit the `Config.lua` file to match your server's settings. You can configure the role IDs, server name, and messages displayed to users during the connection process.
 
 ## Issues and Contributions
 
