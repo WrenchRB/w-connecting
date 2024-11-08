@@ -1,3 +1,5 @@
+local ogNum = GetConvarInt("sv_maxclients", 64)
+
 -- Function to make HTTP requests to Discord API
 local function request(url)
     local result = nil
@@ -144,14 +146,13 @@ Citizen.CreateThread(function()
     local oq = {}
     local q = {}
     local lp = {}
-    local ogNum = GetConvarInt("sv_maxclients", 64)
 
     StopResource("hardcap")
     AddEventHandler("playerDropped", function()
         local source = source
         local discord = GetDiscordId(source)
-        local Num = GetConvarInt("sv_maxclients", 30)
-        if Num - ogNum > 0 then
+        local Num = GetConvarInt("sv_maxclients", 64)
+        if Num - ogNum > 0 and Config.IncreaseSlot then
             ExecuteCommand("sv_maxclients "..(Num-1))
         end
         if not discord then
@@ -242,7 +243,7 @@ Citizen.CreateThread(function()
                         if discord then
                             for _, v in ipairs(GetPlayers()) do
                                 local p = v
-                                local discord2 = GetDiscordId(p)
+                                local discord2 = GetDiscordId(tonumber(p))
                                 if discord2 == discord then
                                     table.remove(oq, i)
                                     break
@@ -252,24 +253,25 @@ Citizen.CreateThread(function()
                     end
                 end
             end
-            table.sort(q, function(a, b)
-                if a.p == b.p then
-                    return a.j < b.j
-                else
+            if #q > 0 then
+                table.sort(q, function (a,b)
+                    if a.p == b.p then
+                        return a.j < b.j
+                    end
                     return a.p < b.p
-                end
-            end)
-            local onJoin = #oq
-            local MaxPlayers = GetConvarInt("sv_maxclients", 30)
-            if q[1] then
-                if MaxPlayers - (onJoin + #GetPlayers()) > 0 then
-                    local data = q[1]
-                    table.insert(oq, data)
-                    table.remove(q, 1)
-                elseif Config.IncreaseSlot then
-                    local p = q[1].p
-                    if p == 1 then
-                        ExecuteCommand("sv_maxclients "..(MaxPlayers+1))
+                end)
+                local onJoin = #oq
+                local MaxPlayers = GetConvarInt("sv_maxclients", 64)
+                if q[1] then
+                    if MaxPlayers - (onJoin + #GetPlayers()) > 0 then
+                        local data = q[1]
+                        table.insert(oq, data)
+                        table.remove(q, 1)
+                    else
+                        local p = q[1].p
+                        if p == 1 and Config.IncreaseSlot then
+                            ExecuteCommand("sv_maxclients "..(MaxPlayers+1))
+                        end
                     end
                 end
             end
