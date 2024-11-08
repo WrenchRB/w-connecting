@@ -12,7 +12,10 @@ Config = {
 
     -- Role IDs that are allowed to join
     Roles = {
-        '1273048666218823751',
+        '700974891956174879', -- priority = 1, highest
+        '700974891956174879', -- priority = 2, high
+        '700974891956174879', -- priority = 3, normal
+        -- higher index = lower priority
     },
 
     -- Admin role IDs, used if IncreaseSlot is enabled
